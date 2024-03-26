@@ -11,10 +11,10 @@ post
 
 {% block content %}
 
-{% for obj in qs %}
-    {{obj.title}} - {{obj.body}} <br>
+    {% for obj in qs %}
+        {{obj.title}} - {{obj.body}} <br>
 
-{% endfor %}
-
+    {% endfor %}
+    <div id="hello-world"></div>
 
 {% endblock content %}
