@@ -128,7 +128,7 @@ STATICFILES_DIR = {
     BASE_DIR / 'profiles' / 'static',
 }
 
-MEDIA_URL = '/media/'
+MEDIA_URL = '/media/'           # find URL media about images
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
