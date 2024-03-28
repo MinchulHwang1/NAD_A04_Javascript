@@ -10,12 +10,19 @@ def post_list_and_create(request):
     form = PostForm(request.POST or None)
     # qs = Post.objects.all()
 
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':     # it means is_ajax()
         if form.is_valid():
             author = Profile.objects.get(user=request.user)
             instance = form.save(commit=False)
             instance.author = author
             instance.save()
+            return JsonResponse({
+                'title' : instance.title,
+                'body': instance.body,
+                'author' : instance.author.user.username,
+                'id' : instance.id
+            })
+
     context = {
         'form' : form,
     }
@@ -23,25 +30,26 @@ def post_list_and_create(request):
     return render(request, 'posts/main.html', context)
 
 def load_post_data_view(request, num_posts):
-    visible = 3
-    upper = num_posts           # 9
-    lower = upper - visible         # 6
-    size = Post.objects.all().count()
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':     # it means is_ajax()
+        visible = 3
+        upper = num_posts           # 9
+        lower = upper - visible         # 6
+        size = Post.objects.all().count()
 
-    qs = Post.objects.all()
-    # data = serializers.serialize('json', qs)
-    data = []           # make it dictionary
-    for obj in qs:
-        item = {        # take information and put them into dictionary
-            'id' : obj.id,
-            'title' : obj.title,
-            'body' : obj.body,
-            'liked' : True if request.user in obj.liked.all() else False,
-            'count' : obj.like_count,
-            'author' : obj.author.user.username
-        }
-        data.append(item)
-    return JsonResponse({'data': data[lower:upper], 'size' : size})
+        qs = Post.objects.all()
+        # data = serializers.serialize('json', qs)
+        data = []           # make it dictionary
+        for obj in qs:
+            item = {        # take information and put them into dictionary
+                'id' : obj.id,
+                'title' : obj.title,
+                'body' : obj.body,
+                'liked' : True if request.user in obj.liked.all() else False,
+                'count' : obj.like_count,
+                'author' : obj.author.user.username
+            }
+            data.append(item)
+        return JsonResponse({'data': data[lower:upper], 'size' : size})
 
 def like_unlike_post(request):
     if request.is_ajax():
