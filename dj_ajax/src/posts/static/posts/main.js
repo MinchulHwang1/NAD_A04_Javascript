@@ -173,6 +173,7 @@ postForm.addEventListener('submit', e=>{
             likeUnlikePost()
             $('#addPostModal').modal('hide')
             handleAlerts('success', 'New post added!')          // When user press add button, the function which is in function.js will be worked
+            postForm.reset()                                    // reset the add post window after press add post
         },
         error: function(error){
             console.log(error)
