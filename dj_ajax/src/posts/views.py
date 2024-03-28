@@ -75,7 +75,7 @@ def post_detail_data_view(request, pk):
     return JsonResponse({'data': data})
 
 def like_unlike_post(request):
-    if request.is_ajax():
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         pk = request.POST.get('pk') #get it from main.js
         obj = Post.objects.get(pk=pk)
         if request.user in obj.liked.all():
@@ -86,5 +86,23 @@ def like_unlike_post(request):
             obj.liked.add(request.user)
         return JsonResponse({'liked': liked, 'count': obj.like_count})
 
-def hello_world_view(request):
-    return JsonResponse({'text' : 'hello world x2'})
+def update_post(request, pk):               # When user press update button
+    obj = Post.objects.get(pk=pk)
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        new_title = request.POST.get('title')   # get title and body and post it
+        new_body = request.POST.get('body')
+        obj.title = new_title
+        obj.body = new_body
+        return JsonResponse({
+            'title' : new_title,
+            'body': new_body,
+        })
+
+def delete_post(request, pk):
+    obj = Post.objects.get(pk=pk)
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        obj.delete()
+        return JsonResponse({})
+    
+# def hello_world_view(request):
+#     return JsonResponse({'text' : 'hello world x2'})

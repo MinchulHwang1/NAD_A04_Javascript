@@ -1,13 +1,25 @@
 console.log('hello world detail')
+// console.log(window.location)
 const postBox = document.getElementById('post-box')
+const alertBox = document.getElementById('alert-box')
 const backBtn = document.getElementById('back-btn')         // cleck event for back button
 const updateBtn = document.getElementById('update-btn')
 const deleteBtn = document.getElementById('delete-btn')
+
 const url = window.location.href + "data/"
+const updateUrl = window.location.href + "update/"
+const deleteUrl = window.location.href + "delete/"
+
+const updateFrom = document.getElementById('update-form')
+const deleteFrom = document.getElementById('delete-form')
+
 const spinnerBox = document.getElementById('spinner-box')
 
 const titleInput = document.getElementById('id_title')
 const bodyInput = document.getElementById('id_body')
+
+const csrf = document.getElementsByName('csrfmiddlewaretoken')
+
 
 backBtn.addEventListener('click', () =>{
     history.back()                  // it means back to main page
@@ -31,10 +43,12 @@ $.ajax({
 
         // show the contents of post inside of new url page
         const titleEl = document.createElement('h3')
-        titleEl.setAttribute('class', 'mt-1')
+        titleEl.setAttribute('class', 'mt-3')
+        titleEl.setAttribute('id', 'title')
 
         const bodyEl = document.createElement('p')
         bodyEl.setAttribute('class', 'mt-1')
+        bodyEl.setAttribute('id', 'body')
 
         titleEl.textContent = data.title        // assign title and body contents in new url contents
         bodyEl.textContent = data.body
@@ -50,4 +64,50 @@ $.ajax({
     error: function(error){
         console.log(error)
     }
+})
+
+updateFrom.addEventListener('submit', e=>{
+    e.preventDefault()
+
+    const title = document.getElementById('title')
+    const body = document.getElementById('body')
+
+    $.ajax({
+        type: 'POST',
+        url: updateUrl,
+        data: {
+            'csrfmiddlewaretoken': csrf[0].value,
+            'title': titleInput.value,
+            'body' : bodyInput.value,
+        },
+        success: function(response){
+            console.log(response)
+            handleAlerts('success', 'post has been updated')
+            title.textContent = response.title
+            body.textContent = response.body
+        },
+        error: function(error){
+            console.log(error)
+        }
+    })
+})
+
+deleteFrom.addEventListener('submit', e=>{
+    e.preventDefault()
+
+    $.ajax({
+        type: 'POST',
+        url: deleteUrl,
+        data:{
+            'csrfmiddlewaretoken': csrf[0].value,
+        },
+        success: function(response){
+            console.log(response)
+            window.location.href = window.location.origin
+            localStorage.setItem('title', titleInput.value)
+        },
+        error: function(error){
+            console.log(error)
+        }
+    })
 })
