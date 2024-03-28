@@ -12,7 +12,9 @@ from .views import(
     
     delete_post,
 
-    update_post
+    update_post,
+
+    image_upload_view
 
     #hello_world_view
 )
@@ -24,7 +26,7 @@ urlpatterns = [
     # where '' the URL address will be different depending on what you put inside.
 
     path('like-unlike/', like_unlike_post, name='like-unlike'),
-
+    path('upload/', image_upload_view, name='image-upload'),
     path('<pk>/', post_detail, name='post-detail'),
     path('<pk>/update/', update_post, name='post-update'),
     path('<pk>/delete/', delete_post, name='post-delete'),
